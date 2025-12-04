@@ -1,20 +1,21 @@
 import random
 import time
-import json # <-- Nuevo: Necesario para guardar y cargar la partida
+import json # Necesario para guardar y cargar la partida en formato JSON
 
 # --- Constantes del Juego ---
 DIMENSION = 10
-AGUA = "~"      
-BARCO = "#"     
-TOCADO = "X"    
-FALLADO = "O"   
+AGUA = "~"      # Símbolo para agua
+BARCO = "#"     # Símbolo para barco intacto
+TOCADO = "X"    # Símbolo para barco impactado
+FALLADO = "O"   # Símbolo para disparo al agua
 
+# Diccionarios y listas para la traducción de coordenadas (A->0, B->1, etc.)
 LETRAS_A_NUMEROS = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 'J': 9}
 NUMEROS_A_LETRAS = "ABCDEFGHIJ" 
 
 
 # -----------------------------------------------------------------
-# --- 1. LÓGICA BÁSICA DEL TABLERO (Sin cambios) ---
+## 1. Lógica Básica del Tablero y Barcos
 # -----------------------------------------------------------------
 
 def crear_tablero(dimension):
@@ -30,7 +31,7 @@ def imprimir_tablero(tablero):
         print(f"{NUMEROS_A_LETRAS[i]} | {' '.join(fila)}") 
 
 def validar_coordenadas(fila, col, longitud, orientacion, tablero):
-    # ... (código existente para validar coordenadas)
+    """Comprueba si el barco cabe y no choca con otro."""
     if orientacion == 'H':
         if col + longitud > DIMENSION: return False
         for i in range(longitud):
@@ -42,7 +43,7 @@ def validar_coordenadas(fila, col, longitud, orientacion, tablero):
     return True
 
 def colocar_barcos_aleatorios(tablero, flota):
-    # ... (código existente para colocar barcos)
+    """Coloca una lista de barcos (longitudes) aleatoriamente."""
     for longitud in flota:
         colocado = False
         while not colocado:
@@ -61,11 +62,11 @@ def colocar_barcos_aleatorios(tablero, flota):
 
 
 # -----------------------------------------------------------------
-# --- 2. LÓGICA DE COORDENADAS E INTERACCIÓN (Sin cambios) ---
+## 2. Lógica de Coordenadas y Ataque
 # -----------------------------------------------------------------
 
 def traducir_coordenada(coordenada):
-    # ... (código existente para traducir coordenadas)
+    """Traduce una coordenada tipo 'A5' a índices de matriz (0, 5)."""
     if len(coordenada) < 2 or len(coordenada) > 3:
         return None, None
     
@@ -87,9 +88,8 @@ def traducir_coordenada(coordenada):
     else:
         return None, None
 
-
 def pedir_disparo(tablero_enemigo_disparos):
-    # ... (código existente para pedir y validar disparo)
+    """Pide y valida la coordenada de disparo."""
     while True:
         coordenada_str = input("🎯 ¿Dónde disparas? (Ej: A5, J0): ").strip()
         fila, columna = traducir_coordenada(coordenada_str)
@@ -105,10 +105,7 @@ def pedir_disparo(tablero_enemigo_disparos):
         return fila, columna
 
 def realizar_ataque(tablero_pc_barcos, tablero_pc_disparos):
-    """
-    Gestiona la secuencia de ataque del jugador: pide coordenada, comprueba impacto
-    y actualiza ambos tableros.
-    """
+    """Gestiona la secuencia de ataque del jugador."""
     print("\n--- INICIANDO ATAQUE ---")
     print("Tu mapa de disparos (IA):")
     imprimir_tablero(tablero_pc_disparos)
@@ -127,66 +124,89 @@ def realizar_ataque(tablero_pc_barcos, tablero_pc_disparos):
 
 
 # -----------------------------------------------------------------
-# --- 3. FUNCIONALIDAD DE GUARDADO (NUEVO) ---
+## 3. Funcionalidad de Guardado y Carga
 # -----------------------------------------------------------------
 
 def guardar_partida(tablero_pc_barcos, tablero_pc_disparos, nombre_archivo="partida_guardada.json"):
     """Guarda el estado actual de la partida en un archivo JSON."""
     
-    # Empaquetamos el estado del juego en un diccionario
     estado_partida = {
         "tablero_pc_barcos": tablero_pc_barcos,
         "tablero_pc_disparos": tablero_pc_disparos,
-        "turno_actual": 1 # (Futuro: se puede guardar el turno actual o quien tiene el turno)
     }
     
     try:
-        # Abrimos el archivo en modo escritura ('w') y usamos json.dump
         with open(nombre_archivo, 'w') as f:
-            json.dump(estado_partida, f, indent=4) # indent=4 para que sea legible
+            json.dump(estado_partida, f, indent=4)
         print(f"\n💾 Partida guardada con éxito en '{nombre_archivo}'.")
     except Exception as e:
         print(f"\n❌ Error al guardar la partida: {e}")
 
+def cargar_partida(nombre_archivo="partida_guardada.json"):
+    """Carga el estado de la partida desde un archivo JSON."""
+    try:
+        with open(nombre_archivo, 'r') as f:
+            estado_partida = json.load(f)
+        
+        print(f"\n✅ Partida cargada desde '{nombre_archivo}'.")
+        
+        return estado_partida["tablero_pc_barcos"], estado_partida["tablero_pc_disparos"]
+        
+    except FileNotFoundError:
+        return None, None # Indicamos que no hay archivo guardado
+    except Exception as e:
+        print(f"\n❌ Error al cargar la partida. El archivo podría estar corrupto: {e}")
+        return None, None
+
 
 # -----------------------------------------------------------------
-# --- 4. FUNCIÓN CONTROLADORA DEL JUEGO CON SUBMENÚ (ACTUALIZADO) ---
+## 4. Función Controladora del Juego (con Submenú)
 # -----------------------------------------------------------------
 
-def iniciar_juego():
-    """Configura el juego y gestiona el bucle de la partida con el submenú."""
-    print("\n>> Generando el campo de batalla de la IA...")
-    time.sleep(1)
+def iniciar_juego(tablero_pc_barcos=None, tablero_pc_disparos=None):
+    """
+    Configura y gestiona el bucle de la partida. 
+    Inicia desde cero si no se pasan tableros (Nueva Partida) o continúa si se pasan.
+    """
     
-    tablero_pc_barcos = crear_tablero(DIMENSION)     
-    tablero_pc_disparos = crear_tablero(DIMENSION)   
-    flota_estandar = [4, 3, 3, 2, 2]
-    colocar_barcos_aleatorios(tablero_pc_barcos, flota_estandar)
+    if tablero_pc_barcos is None:
+        # Lógica de "Nueva Partida"
+        print("\n>> Generando el campo de batalla de la IA...")
+        time.sleep(1)
+        
+        tablero_pc_barcos = crear_tablero(DIMENSION)     
+        tablero_pc_disparos = crear_tablero(DIMENSION)   
+        flota_estandar = [4, 3, 3, 2, 2]
+        colocar_barcos_aleatorios(tablero_pc_barcos, flota_estandar)
+        
+        print("\n--- ¡FLOTA ENEMIGA LISTA! COMIENZA LA BATALLA ---")
     
-    print("\n--- ¡FLOTA ENEMIGA LISTA! COMIENZA LA BATALLA ---")
-    
+    else:
+        # Lógica de "Continuar Partida"
+        print("\n--- Partida cargada con éxito. Continuamos la batalla. ---")
+        
     # --- Bucle Principal de Partida con Submenú ---
     while True:
-        # 1. Mostrar el submenú de partida (con la nueva opción)
+        # 1. Mostrar el submenú de partida
         print("\n" + "="*25)
         print("  MENÚ DE PARTIDA ACTUAL")
         print("="*25)
         print("  [1] Atacar")
-        print("  [2] Ver mapa") # <-- NUEVA OPCIÓN
-        print("  [3] Salir al menú principal (Guardar)") # <-- OPCIÓN ACTUALIZADA
+        print("  [2] Ver mapa") 
+        print("  [3] Salir al menú principal (Guardar)") 
         
         eleccion = input("\n> Selecciona una opción: ").strip()
 
         if eleccion == '1':
             realizar_ataque(tablero_pc_barcos, tablero_pc_disparos)
             
-        elif eleccion == '2': # <-- IMPLEMENTACIÓN DE 'VER MAPA'
+        elif eleccion == '2': 
             print("\n--- TU MAPA DE DISPAROS DEL ENEMIGO ---")
             imprimir_tablero(tablero_pc_disparos)
             input("\nPresiona ENTER para volver al menú de partida...")
             
         elif eleccion == '3': 
-            guardar_partida(tablero_pc_barcos, tablero_pc_disparos) # <-- GUARDAR PARTIDA
+            guardar_partida(tablero_pc_barcos, tablero_pc_disparos)
             break 
         
         else:

@@ -1,0 +1,479 @@
+================================================================================
+                    CONTEXTO DEL PROYECTO - BUSCAMINAS Y HUNDIR LA FLOTA
+================================================================================
+
+INFORMACIÓN GENERAL DEL PROYECTO
+================================================================================
+
+Nombre del Proyecto: Buscaminas y Hundir la Flota
+Tipo: Proyecto Grupal de Python
+Asignatura: Optativa - Introducción a Python
+Curso: ASIR (Administración de Sistemas Informáticos en Red) - 2º Curso
+Fecha: Diciembre 2025 - Enero 2026
+Entorno: Terminal/Consola (sin interfaz gráfica)
+
+DESCRIPCIÓN GENERAL
+================================================================================
+
+Este proyecto implementa dos juegos clásicos completamente funcionales en Python:
+1. BUSCAMINAS - Juego de lógica para encontrar minas ocultas
+2. HUNDIR LA FLOTA (Battleship) - Juego naval de estrategia
+
+Ambos juegos son accesibles a través de un menú principal y están diseñados 
+para ejecutarse completamente en la terminal sin necesidad de librerías externas
+adicionales (solo usa módulos estándar de Python: random y os).
+
+REQUISITOS TÉCNICOS
+================================================================================
+
+- Python: 3.6 o superior
+- Sistema Operativo: Windows, Linux o macOS
+- Terminal: Con soporte para caracteres Unicode (para símbolos y emojis)
+- Sin dependencias externas: Solo módulos estándar de Python
+
+ESTRUCTURA DEL PROYECTO
+================================================================================
+
+Dream_Team/
+│
+├── main.py              # Menú principal - Punto de entrada del programa
+├── buscaminas.py        # Lógica completa del juego Buscaminas
+├── hundir_flota.py      # Lógica completa del juego Hundir la Flota
+├── README.md            # Documentación completa del proyecto
+└── __pycache__/         # Archivos compilados de Python (generados automáticamente)
+
+CARACTERÍSTICAS PRINCIPALES DEL PROYECTO
+================================================================================
+
+✓ Arquitectura modular con archivos separados por funcionalidad
+✓ Código ampliamente comentado para facilitar comprensión y colaboración
+✓ Validación robusta de entradas del usuario
+✓ Interfaz de terminal clara y amigable
+✓ Manejo de errores y excepciones
+✓ Diseño orientado a la reutilización de código
+✓ Documentación completa con docstrings en todas las funciones
+
+CONCEPTOS DE PROGRAMACIÓN APLICADOS
+================================================================================
+
+- Estructuras de datos (listas, listas bidimensionales/matrices)
+- Funciones y modularización del código
+- Bucles (for, while) y condicionales (if, elif, else)
+- Recursividad (expansión automática en Buscaminas)
+- Generación de números aleatorios (random)
+- Validación y procesamiento de entrada del usuario
+- Algoritmos de búsqueda (IA en Hundir la Flota)
+- Importación y uso de módulos
+- Manejo de excepciones (try-except)
+- Documentación de código (docstrings y comentarios)
+
+
+================================================================================
+                        CONTEXTO DEL JUEGO: BUSCAMINAS
+================================================================================
+
+ARCHIVO: buscaminas.py
+
+DESCRIPCIÓN DEL JUEGO
+================================================================================
+
+El Buscaminas es un juego de lógica donde el jugador debe descubrir todas las
+casillas del tablero que no contienen minas, basándose en pistas numéricas que
+indican cuántas minas hay en las casillas adyacentes.
+
+NIVELES DE DIFICULTAD
+================================================================================
+
+1. FÁCIL:
+   - Tablero: 8 filas × 10 columnas (80 casillas)
+   - Minas: 10
+   - Ideal para principiantes
+
+2. INTERMEDIO:
+   - Tablero: 16 filas × 16 columnas (256 casillas)
+   - Minas: 40
+   - Dificultad moderada
+
+3. DIFÍCIL:
+   - Tablero: 30 filas × 16 columnas (480 casillas)
+   - Minas: 99
+   - Desafío avanzado
+
+CARACTERÍSTICAS TÉCNICAS
+================================================================================
+
+TABLEROS:
+- Tablero Real: Contiene las minas ('*') y números (0-8)
+- Tablero Visible: Lo que el jugador ve durante el juego
+  · '#' = Casilla oculta
+  · 'F' = Bandera (mina sospechosa marcada por el jugador)
+  · '.' = Casilla vacía (0 minas vecinas)
+  · '1'-'8' = Número de minas en casillas adyacentes
+
+MECÁNICAS DEL JUEGO:
+1. Colocación aleatoria de minas sin repetición de posiciones
+2. Cálculo automático de minas vecinas para cada casilla
+3. Sistema de coordenadas: Letra (A, B, C...) para columnas, Número (1, 2, 3...) para filas
+4. Expansión automática recursiva cuando se revela una casilla vacía (0) y cuando haya numero tambien pero sin revelar minas de mas como cualquier juego de buscaminas.
+5. Sistema de banderas para marcar casillas sospechosas
+
+ACCIONES DEL JUGADOR:
+- R (Revelar): Descubrir una casilla
+- F (Flag): Marcar/desmarcar una bandera en una casilla sospechosa
+- S (Salir): Abandonar el juego
+
+CONDICIONES DE VICTORIA/DERROTA:
+- VICTORIA: Revelar todas las casillas sin minas
+- DERROTA: Revelar una casilla con mina
+
+FUNCIONES PRINCIPALES
+================================================================================
+
+1. crear_tablero(filas, columnas)
+   - Crea los tableros real y visible inicializados
+
+2. colocar_minas(tablero_real, num_minas)
+   - Coloca minas aleatoriamente sin repetir posiciones
+
+3. calcular_vecinos(tablero_real)
+   - Calcula el número de minas adyacentes para cada casilla
+   - Revisa las 8 direcciones (arriba, abajo, izquierda, derecha y diagonales)
+
+4. mostrar_tablero(tablero_visible, mostrar_coordenadas=True)
+   - Muestra el tablero en la terminal con coordenadas
+
+5. revelar_casilla(tablero_real, tablero_visible, fila, columna)
+   - Revela una casilla
+   - Implementa expansión automática recursiva para casillas vacías
+   - IMPORTANTE: Cuando expande ceros, también revela los números en el borde
+
+6. marcar_bandera(tablero_visible, fila, columna)
+   - Marca o desmarca una bandera en una casilla
+
+7. verificar_victoria(tablero_real, tablero_visible)
+   - Verifica si el jugador ha ganado
+
+8. convertir_coordenada_columna(letra)
+   - Convierte letras de columna (A, B, C, AA, AB...) a índices numéricos
+
+9. revelar_todo(tablero_real, tablero_visible)
+   - Revela todo el tablero (usado al perder o ganar)
+
+10. menu_dificultad()
+    - Muestra el menú de selección de dificultad
+
+11. jugar_buscaminas()
+    - Función principal que controla todo el flujo del juego
+
+ALGORITMO DE EXPANSIÓN AUTOMÁTICA
+================================================================================
+
+Cuando el jugador revela una casilla con valor 0 (sin minas vecinas):
+1. La casilla se revela mostrando '.'
+2. Se revisan las 8 casillas adyacentes (recursivamente)
+3. Si una casilla adyacente es 0, se expande nuevamente
+4. Si una casilla adyacente es un número (1-8), se revela pero no se expande más
+5. Este proceso continúa hasta que todas las casillas conectadas estén reveladas
+
+ESTE ALGORITMO ES FUNDAMENTAL para que el juego sea jugable, ya que permite
+descubrir áreas grandes del tablero con un solo click, igual que en el 
+Buscaminas tradicional.
+
+
+================================================================================
+                    CONTEXTO DEL JUEGO: HUNDIR LA FLOTA
+================================================================================
+
+ARCHIVO: hundir_flota.py
+
+DESCRIPCIÓN DEL JUEGO
+================================================================================
+
+Hundir la Flota (Battleship) es un juego de estrategia naval donde dos
+oponentes intentan hundir todos los barcos del contrario disparando a 
+coordenadas del tablero enemigo. El primero en hundir toda la flota enemiga gana.
+
+CONFIGURACIÓN DEL TABLERO
+================================================================================
+
+- Dimensiones: 10 filas × 10 columnas (100 casillas)
+- Coordenadas: Letras A-J para columnas, números 1-10 para filas
+- Representación inicial: '~' (agua)
+
+FLOTA DE BARCOS
+================================================================================
+
+Cada jugador tiene 5 barcos:
+1. Portaaviones: 5 casillas
+2. Acorazado: 4 casillas
+3. Crucero 1: 3 casillas
+4. Crucero 2: 3 casillas
+5. Lancha de Reconocimiento: 2 casillas
+
+TOTAL: 17 casillas ocupadas por barcos
+
+MODOS DE JUEGO
+================================================================================
+
+1. JUGADOR VS JUGADOR (PvP):
+   - Dos personas juegan localmente en la misma computadora
+   - Turnos alternados
+   - Cada jugador debe apartar la vista cuando el otro juega
+
+2. JUGADOR VS COMPUTADORA (PvC):
+   - Un jugador humano contra la Inteligencia Artificial
+   - Tres niveles de dificultad de IA
+
+NIVELES DE IA (INTELIGENCIA ARTIFICIAL)
+================================================================================
+
+1. FÁCIL:
+   - Estrategia: Disparos completamente aleatorios
+   - Sin memoria de impactos previos
+   - Nivel básico para principiantes
+
+2. INTERMEDIO:
+   - Estrategia: Dispara aleatorio hasta tocar un barco
+   - Al tocar un barco, busca inteligentemente en las casillas adyacentes
+   - Mantiene lista de barcos tocados pendientes de hundir
+
+3. DIFÍCIL:
+   - Estrategia: Patrón de tablero de ajedrez + búsqueda inteligente
+   - Usa un patrón optimizado (dispara en casillas alternadas como ajedrez)
+   - Al tocar, activa búsqueda inteligente como el nivel intermedio
+   - Nivel más desafiante
+
+MECÁNICAS DEL JUEGO
+================================================================================
+
+COLOCACIÓN DE BARCOS:
+- Manual: El jugador elige posición (fila, columna) y orientación (H/V)
+- Aleatoria: El sistema coloca automáticamente
+- Mixta: El jugador puede elegir para cada barco
+
+REGLAS DE COLOCACIÓN:
+- Los barcos NO pueden salirse del tablero
+- Los barcos NO pueden solaparse
+- Los barcos NO pueden estar adyacentes (debe haber al menos 1 casilla de separación)
+
+SISTEMA DE DISPAROS:
+Cada disparo puede resultar en:
+- AGUA (~→O): No hay barco en esa posición
+- TOCADO (B→X): Le diste a un barco pero no está hundido
+- HUNDIDO: Todas las partes del barco están tocadas (X)
+- REPETIDO: Ya disparaste en esa casilla antes
+
+VISUALIZACIÓN:
+Cada jugador ve dos tableros:
+1. TU FLOTA: Muestra tus barcos y los impactos enemigos
+2. TUS DISPAROS: Muestra tus disparos al enemigo (no ves sus barcos)
+
+SÍMBOLOS EN EL TABLERO:
+- '~' = Agua (sin disparar)
+- 'B' = Tu barco (solo en tablero propio)
+- 'X' = Parte de barco tocada
+- 'O' = Disparo fallado (agua)
+
+CONDICIONES DE VICTORIA:
+- VICTORIA: Hundir todos los barcos enemigos (17 casillas con 'X')
+- DERROTA: Que el enemigo hunda todos tus barcos
+
+FUNCIONES PRINCIPALES
+================================================================================
+
+1. crear_tablero()
+   - Crea un tablero 10×10 vacío con agua ('~')
+
+2. mostrar_tableros(tablero_propio, tablero_disparos, nombre_jugador, turno_actual)
+   - Muestra los dos tableros del jugador lado a lado
+
+3. validar_posicion(tablero, fila, columna, longitud, orientacion)
+   - Valida si un barco se puede colocar en una posición
+   - Verifica límites, solapamiento y adyacencia
+
+4. colocar_barco(tablero, fila, columna, longitud, orientacion)
+   - Coloca un barco en el tablero
+
+5. colocar_barco_aleatorio(tablero, longitud)
+   - Coloca un barco aleatoriamente con validación
+
+6. colocar_barco_manual(tablero, nombre_barco, longitud)
+   - Permite al jugador colocar un barco manualmente o aleatorio
+
+7. colocar_flota(tablero, nombre_jugador)
+   - Gestiona la colocación de toda la flota de 5 barcos
+
+8. convertir_coordenada(columna_letra, fila_num)
+   - Convierte coordenadas letra-número a índices de matriz
+
+9. realizar_disparo(tablero_enemigo, tablero_disparos, fila, columna)
+   - Realiza un disparo y retorna el resultado
+
+10. verificar_barco_hundido(tablero, fila, columna)
+    - Verifica si un barco está completamente hundido
+    - Usa búsqueda recursiva para encontrar todas las partes del barco
+
+11. verificar_victoria(tablero)
+    - Verifica si todos los barcos han sido hundidos
+
+12. turno_jugador(nombre_jugador, tablero_propio, tablero_enemigo, tablero_disparos)
+    - Gestiona el turno de un jugador humano
+
+13. ia_disparar_facil(tablero_disparos)
+    - IA nivel fácil: disparo completamente aleatorio
+
+14. ia_disparar_intermedio(tablero_disparos, ultimo_tocado)
+    - IA nivel intermedio: búsqueda inteligente tras tocar
+
+15. ia_disparar_dificil(tablero_disparos, ultimo_tocado, patron)
+    - IA nivel difícil: patrón de ajedrez + búsqueda inteligente
+
+16. turno_ia(nivel, tablero_ia, tablero_jugador, tablero_disparos_ia, ultimo_tocado, patron)
+    - Gestiona el turno de la IA según su nivel
+
+17. menu_modo_juego()
+    - Menú para seleccionar modo PvP o PvC
+
+18. menu_dificultad_ia()
+    - Menú para seleccionar dificultad de la IA
+
+19. jugar_hundir_flota()
+    - Función principal que controla todo el flujo del juego
+
+ALGORITMO DE VERIFICACIÓN DE BARCO HUNDIDO
+================================================================================
+
+Para verificar si un barco está hundido:
+1. Desde la casilla tocada, busca recursivamente todas las partes conectadas
+2. Un barco es un conjunto de casillas 'B' o 'X' conectadas horizontal o verticalmente
+3. No considera conexiones diagonales
+4. El barco está hundido si TODAS sus partes son 'X' (ninguna 'B')
+
+ALGORITMO DE IA DIFÍCIL - PATRÓN DE TABLERO DE AJEDREZ
+================================================================================
+
+La IA difícil usa un patrón optimizado:
+1. Crea una lista de casillas donde (fila + columna) % 2 == 0
+2. Esto crea un patrón como un tablero de ajedrez
+3. Como los barcos ocupan múltiples casillas consecutivas, SIEMPRE tocará
+   cualquier barco al disparar en este patrón
+4. Es más eficiente que disparar completamente al azar
+5. Al tocar un barco, cambia a búsqueda inteligente
+
+
+================================================================================
+                        CONTEXTO DEL MENÚ PRINCIPAL
+================================================================================
+
+ARCHIVO: main.py
+
+DESCRIPCIÓN
+================================================================================
+
+El archivo main.py es el punto de entrada del programa. Proporciona un menú
+principal intuitivo para que el usuario elija entre los dos juegos o salir.
+
+FUNCIONALIDADES
+================================================================================
+
+1. limpiar_pantalla()
+   - Limpia la terminal para mejorar la visualización
+   - Compatible con Windows (cls) y Linux/Mac (clear)
+
+2. mostrar_banner()
+   - Muestra un banner ASCII art de bienvenida
+
+3. menu_principal()
+   - Muestra el menú con las opciones
+   - Gestiona la selección del usuario
+   - Bucle infinito hasta que el usuario elija salir
+
+OPCIONES DEL MENÚ:
+1. Jugar Buscaminas → Llama a buscaminas.jugar_buscaminas()
+2. Jugar Hundir la Flota → Llama a hundir_flota.jugar_hundir_flota()
+3. Salir → Termina el programa
+
+MANEJO DE ERRORES:
+- Captura Ctrl+C (KeyboardInterrupt) para salir elegantemente
+- Captura excepciones generales para evitar crashes inesperados
+- Mensajes claros de error para el usuario
+
+EJECUCIÓN:
+El programa se ejecuta con: python main.py
+
+
+================================================================================
+                            CÓMO EJECUTAR EL PROYECTO
+================================================================================
+
+MÉTODO 1: Ejecutar el menú principal
+--------------------------------------------------------------------------------
+python main.py
+
+Este es el método recomendado. Muestra el menú principal y permite elegir
+entre los dos juegos.
+
+
+MÉTODO 2: Ejecutar cada juego individualmente
+--------------------------------------------------------------------------------
+Solo Buscaminas:
+python buscaminas.py
+
+Solo Hundir la Flota:
+python hundir_flota.py
+
+
+VERIFICAR INSTALACIÓN DE PYTHON:
+--------------------------------------------------------------------------------
+python --version
+
+Debe mostrar Python 3.6 o superior.
+
+
+================================================================================
+                        SOLUCIÓN DE PROBLEMAS COMUNES
+================================================================================
+
+PROBLEMA: El programa no arranca
+SOLUCIÓN:
+- Verifica que tienes Python 3.6+: python --version
+- Asegúrate de estar en la carpeta correcta: cd Prueba
+- En Linux/Mac intenta: python3 main.py
+
+PROBLEMA: Los símbolos se ven mal
+SOLUCIÓN:
+- Usa una terminal con soporte Unicode (Windows Terminal en Windows)
+- Actualiza tu terminal a una versión más reciente
+- En Windows, evita usar CMD antiguo, usa PowerShell o Windows Terminal
+
+PROBLEMA: Error "ModuleNotFoundError"
+SOLUCIÓN:
+- Asegúrate de que todos los archivos estén en la misma carpeta
+- Ejecuta desde la carpeta Prueba: cd Prueba && python main.py
+- Verifica que existan: main.py, buscaminas.py, hundir_flota.py
+
+================================================================================
+                            POSIBLES MEJORAS FUTURAS
+================================================================================
+
+IDEAS PARA EXPANDIR EL PROYECTO:
+
+1. Sistema de puntuación y ranking
+2. Guardar y cargar partidas
+3. Modo multijugador en red
+4. Interfaz gráfica con Pygame o Tkinter
+5. Sonidos y efectos visuales
+6. Estadísticas de juego (partidas ganadas, tiempo promedio, etc.)
+7. Niveles personalizados
+8. Modo histórico de partidas
+9. Logros y desafíos
+
+
+================================================================================
+                                FIN DEL DOCUMENTO
+================================================================================
+
+Fecha: Diciembre 2025
+Proyecto: Buscaminas y Hundir la Flota - ASIR Python - Dream Team
+
+Para más información, consulta el README.md del proyecto.

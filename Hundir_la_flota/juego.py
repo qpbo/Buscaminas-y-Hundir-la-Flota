@@ -6,7 +6,7 @@ import json
 DIMENSION = 10
 AGUA = "~"      # Símbolo para agua
 BARCO = "#"     # Símbolo para barco intacto
-TOCADO = "X"    # Símbolo para barco impactado
+TOCADO = "X"    # Símbolo para barco impactado (lo usa tanto el jugador como la IA)
 FALLADO = "O"   # Símbolo para disparo al agua
 
 LETRAS_A_NUMEROS = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 'J': 9}
@@ -98,8 +98,6 @@ def pedir_disparo(tablero_enemigo_disparos):
 def realizar_ataque(tablero_pc_barcos, tablero_pc_disparos):
     """Gestiona la secuencia de ataque del jugador y devuelve si hubo impacto."""
     print("\n--- INICIANDO ATAQUE DEL JUGADOR ---")
-    print("Tu mapa de disparos (IA):")
-    imprimir_tablero(tablero_pc_disparos)
     
     f_disp, c_disp = pedir_disparo(tablero_pc_disparos)
     
@@ -118,7 +116,7 @@ def realizar_ataque(tablero_pc_barcos, tablero_pc_disparos):
 
 
 # -----------------------------------------------------------------
-## 3. Lógica de la IA (NUEVO)
+## 3. Lógica de la IA
 # -----------------------------------------------------------------
 
 def generar_disparo_ia(tablero_jugador_disparos):
@@ -141,12 +139,13 @@ def realizar_ataque_ia(tablero_jugador_barcos, tablero_jugador_disparos):
     impacto = False
     if tablero_jugador_barcos[f_disp][c_disp] == BARCO:
         print("💥 ¡HAN DADO EN TU FLOTA! Tocado.")
-        tablero_jugador_disparos[f_disp][c_disp] = TOCADO
-        tablero_jugador_barcos[f_disp][c_disp] = TOCADO
+        # La IA marca el impacto en tu tablero de barcos
+        tablero_jugador_barcos[f_disp][c_disp] = TOCADO 
         impacto = True
     else:
         print("💦 La IA ha disparado al agua. Falló.")
-        tablero_jugador_disparos[f_disp][c_disp] = FALLADO
+        # La IA marca el fallo en tu tablero de barcos
+        tablero_jugador_barcos[f_disp][c_disp] = FALLADO 
     
     time.sleep(1.5)
     return impacto
@@ -173,7 +172,7 @@ def turno_ia(tablero_jugador_barcos, tablero_jugador_disparos, dificultad):
 # -----------------------------------------------------------------
 
 def guardar_partida(tablero_pc_barcos, tablero_pc_disparos, tablero_jugador_barcos, tablero_jugador_disparos, nombre_archivo="partida_guardada.json"):
-    """Guarda el estado completo de la partida."""
+    """Guarda el estado completo de la partida (4 tableros)."""
     
     estado_partida = {
         "tablero_pc_barcos": tablero_pc_barcos,
@@ -190,14 +189,13 @@ def guardar_partida(tablero_pc_barcos, tablero_pc_disparos, tablero_jugador_barc
         print(f"\n❌ Error al guardar la partida: {e}")
 
 def cargar_partida(nombre_archivo="partida_guardada.json"):
-    """Carga el estado completo de la partida desde un archivo JSON."""
+    """Carga el estado completo de la partida desde un archivo JSON (4 tableros)."""
     try:
         with open(nombre_archivo, 'r') as f:
             estado_partida = json.load(f)
         
         print(f"\n✅ Partida cargada desde '{nombre_archivo}'.")
         
-        # Devolvemos los cuatro tableros
         return (estado_partida["tablero_pc_barcos"], 
                 estado_partida["tablero_pc_disparos"],
                 estado_partida["tablero_jugador_barcos"],
@@ -211,10 +209,10 @@ def cargar_partida(nombre_archivo="partida_guardada.json"):
 
 
 # -----------------------------------------------------------------
-## 5. Función Controladora del Juego
+## 5. Función Controladora del Juego (CON CORRECCIÓN EN EL MENÚ)
 # -----------------------------------------------------------------
 
-def iniciar_juego(tablero_pc_barcos=None, tablero_pc_disparos=None, dificultad="Medio"):
+def iniciar_juego(tablero_pc_barcos=None, tablero_pc_disparos=None, tablero_jugador_barcos=None, tablero_jugador_disparos=None, dificultad="Medio"):
     """
     Configura y gestiona el bucle de la partida. 
     Acepta la dificultad y los 4 tableros para continuar partida.
@@ -222,7 +220,7 @@ def iniciar_juego(tablero_pc_barcos=None, tablero_pc_disparos=None, dificultad="
     flota_estandar = [4, 3, 3, 2, 2]
 
     if tablero_pc_barcos is None:
-        # Lógica de "Nueva Partida"
+        # Lógica de "Nueva Partida" (Crea los 4 tableros)
         print("\n>> Generando el campo de batalla...")
         time.sleep(1)
         
@@ -232,20 +230,15 @@ def iniciar_juego(tablero_pc_barcos=None, tablero_pc_disparos=None, dificultad="
         colocar_barcos_aleatorios(tablero_pc_barcos, flota_estandar)
         
         # Tableros del Jugador
-        tablero_jugador_barcos = crear_tablero(DIMENSION)
-        tablero_jugador_disparos = crear_tablero(DIMENSION)
+        tablero_jugador_barcos = crear_tablero(DIMENSION) # Donde están tus barcos y la IA dispara
+        tablero_jugador_disparos = crear_tablero(DIMENSION) # No se usa actualmente, pero se mantiene por simetría
         colocar_barcos_aleatorios(tablero_jugador_barcos, flota_estandar)
         
         print("\n--- ¡FLOTAS LISTAS! COMIENZA LA BATALLA ---")
     
     else:
-        # Lógica de "Continuar Partida" - Aquí recibimos los 4 tableros de la carga
-        # La función cargar_partida devuelve 4 valores, que son recibidos aquí como los primeros 4 argumentos.
-        # Solo usamos los argumentos no-None para continuar el juego.
-        
-        # NOTE: El menú principal necesita llamar a cargar_partida correctamente. 
-        # Aquí asumimos que los tableros del jugador también fueron cargados.
-        pass # La carga ya se ha gestionado en el menú principal.
+        # Lógica de "Continuar Partida"
+        print("\n--- Partida cargada con éxito. Continuamos la batalla. ---")
         
     print(f"Dificultad de la IA: {dificultad}")
         
@@ -256,8 +249,8 @@ def iniciar_juego(tablero_pc_barcos=None, tablero_pc_disparos=None, dificultad="
         print("  MENÚ DE PARTIDA ACTUAL")
         print("="*25)
         print("  [1] Atacar")
-        print("  [2] Ver mapa (IA)") 
-        print("  [3] Ver mi mapa") 
+        print("  [2] Ver mapa (Mi Flota)") # Muestra dónde están tus barcos (tocados/hundidos)
+        print("  [3] Ver mapa (IA)")      # Muestra tus disparos al enemigo
         print("  [4] Salir al menú principal (Guardar)") 
         
         eleccion = input("\n> Selecciona una opción: ").strip()
@@ -269,17 +262,18 @@ def iniciar_juego(tablero_pc_barcos=None, tablero_pc_disparos=None, dificultad="
             turno_ia(tablero_jugador_barcos, tablero_jugador_disparos, dificultad)
             
         elif eleccion == '2': 
+            # 💥 CORRECCIÓN: Ahora imprime el tablero de TUS BARCOS (donde la IA ha disparado)
+            print("\n--- MI FLOTA ---")
+            imprimir_tablero(tablero_jugador_barcos) 
+            input("\nPresiona ENTER para volver al menú de partida...")
+
+        elif eleccion == '3': 
+            # ✅ CORRECTO: Muestra el mapa de la IA (Mis Disparos)
             print("\n--- TU MAPA DE DISPAROS DEL ENEMIGO ---")
             imprimir_tablero(tablero_pc_disparos)
             input("\nPresiona ENTER para volver al menú de partida...")
-
-        elif eleccion == '3':
-            print("\n--- TU FLOTA ---")
-            imprimir_tablero(tablero_jugador_disparos)
-            input("\nPresiona ENTER para volver al menú de partida...")
             
         elif eleccion == '4': 
-            # Guardamos los 4 tableros
             guardar_partida(tablero_pc_barcos, tablero_pc_disparos, tablero_jugador_barcos, tablero_jugador_disparos)
             break 
         

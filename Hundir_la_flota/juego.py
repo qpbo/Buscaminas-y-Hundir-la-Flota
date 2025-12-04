@@ -4,10 +4,10 @@ import json
 
 # --- Constantes del Juego ---
 DIMENSION = 10
-AGUA = "~"      # Símbolo para agua
-BARCO = "#"     # Símbolo para barco intacto
-TOCADO = "X"    # Símbolo para barco impactado
-FALLADO = "O"   # Símbolo para disparo al agua
+AGUA = "~"      
+BARCO = "#"     
+TOCADO = "X"    
+FALLADO = "O"   
 
 LETRAS_A_NUMEROS = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 'J': 9}
 NUMEROS_A_LETRAS = "ABCDEFGHIJ" 
@@ -22,13 +22,23 @@ def crear_tablero(dimension):
     return [[AGUA for _ in range(dimension)] for _ in range(dimension)]
 
 def imprimir_tablero(tablero):
-    """Muestra el tablero con coordenadas en la consola."""
-    print("\n   " + " ".join([str(i) for i in range(DIMENSION)])) 
-    print("  +" + "—" * (DIMENSION * 2)) 
+    """Muestra el tablero con coordenadas en la consola y alinea las columnas."""
+    
+    # 🌟 AJUSTE FINAL: COPIANDO EL FORMATO SOLICITADO 🌟
+    
+    # 1. Cabecera (Números de columna): 4 espacios iniciales
+    #    Los números tienen 1 espacio entre sí (sin espacio extra delante del 0).
+    numeros_columna = " ".join([f"{i}" for i in range(DIMENSION)])
+    print(f"\n   {numeros_columna}") # 💥 3 espacios iniciales 
+    
+    # 2. Línea separadora: 3 espacios iniciales + '+' + 20 guiones largos (para el ancho visual)
+    print("   +" + "—" * 20) # 💥 3 espacios iniciales + 20 guiones largos
     
     for i, fila in enumerate(tablero):
-        print(f"{NUMEROS_A_LETRAS[i]} | {' '.join(fila)}") 
-
+        # 3. Filas: 1 espacio inicial para alinear la letra A con el '+', 
+        #    seguido de ' | ' y el contenido del tablero.
+        print(f" {NUMEROS_A_LETRAS[i]} | {' '.join(fila)}") # 💥 1 espacio inicial
+        
 def validar_coordenadas(fila, col, longitud, orientacion, tablero):
     """Comprueba si el barco cabe y no choca con otro."""
     if orientacion == 'H':
@@ -121,7 +131,6 @@ def realizar_ataque(tablero_pc_barcos, tablero_pc_disparos):
 
 def generar_disparo_ia(tablero_jugador_barcos):
     """Genera coordenadas aleatorias, asegurando que no se dispare dos veces."""
-    # La IA solo dispara a casillas que no sean TOCADO ('X') o FALLADO ('O')
     while True:
         fila = random.randint(0, DIMENSION - 1)
         col = random.randint(0, DIMENSION - 1)
@@ -132,7 +141,6 @@ def generar_disparo_ia(tablero_jugador_barcos):
 def realizar_ataque_ia(tablero_jugador_barcos, tablero_jugador_disparos):
     """Lógica de un solo disparo de la IA y devuelve si hubo impacto."""
     
-    # La IA dispara contra el tablero del jugador, no contra su propio tablero de disparos.
     f_disp, c_disp = generar_disparo_ia(tablero_jugador_barcos)
     coordenada_str = f"{NUMEROS_A_LETRAS[f_disp]}{c_disp}"
     
@@ -142,12 +150,10 @@ def realizar_ataque_ia(tablero_jugador_barcos, tablero_jugador_disparos):
     impacto = False
     if tablero_jugador_barcos[f_disp][c_disp] == BARCO:
         print("💥 ¡HAN DADO EN TU FLOTA! Tocado.")
-        # La IA marca el impacto en tu tablero de barcos
         tablero_jugador_barcos[f_disp][c_disp] = TOCADO 
         impacto = True
     else:
         print("💦 La IA ha disparado al agua. Falló.")
-        # La IA marca el fallo en tu tablero de barcos
         tablero_jugador_barcos[f_disp][c_disp] = FALLADO 
     
     time.sleep(1.5)
@@ -199,7 +205,6 @@ def cargar_partida(nombre_archivo="partida_guardada.json"):
         
         print(f"\n✅ Partida cargada desde '{nombre_archivo}'.")
         
-        # Devolvemos los 4 tableros
         return (estado_partida["tablero_pc_barcos"], 
                 estado_partida["tablero_pc_disparos"],
                 estado_partida["tablero_jugador_barcos"],
@@ -213,7 +218,7 @@ def cargar_partida(nombre_archivo="partida_guardada.json"):
 
 
 # -----------------------------------------------------------------
-## 5. Función Controladora del Juego (CON MENÚ DE PARTIDA CORREGIDO)
+## 5. Función Controladora del Juego
 # -----------------------------------------------------------------
 
 def iniciar_juego(tablero_pc_barcos=None, tablero_pc_disparos=None, tablero_jugador_barcos=None, tablero_jugador_disparos=None, dificultad="Medio"):
@@ -234,14 +239,14 @@ def iniciar_juego(tablero_pc_barcos=None, tablero_pc_disparos=None, tablero_juga
         colocar_barcos_aleatorios(tablero_pc_barcos, flota_estandar)
         
         # Tableros del Jugador
-        tablero_jugador_barcos = crear_tablero(DIMENSION) # Donde están tus barcos y la IA dispara
-        tablero_jugador_disparos = crear_tablero(DIMENSION) # Tu mapa de disparos (no se usa, pero se mantiene por simetría)
+        tablero_jugador_barcos = crear_tablero(DIMENSION) 
+        tablero_jugador_disparos = crear_tablero(DIMENSION) 
         colocar_barcos_aleatorios(tablero_jugador_barcos, flota_estandar)
         
         print("\n--- ¡FLOTAS LISTAS! COMIENZA LA BATALLA ---")
     
     else:
-        # Lógica de "Continuar Partida" (Los 4 tableros ya fueron pasados y desempaquetados)
+        # Lógica de "Continuar Partida"
         print("\n--- Partida cargada con éxito. Continuamos la batalla. ---")
         
     print(f"Dificultad de la IA: {dificultad}")
@@ -253,8 +258,8 @@ def iniciar_juego(tablero_pc_barcos=None, tablero_pc_disparos=None, tablero_juga
         print("  MENÚ DE PARTIDA ACTUAL")
         print("="*25)
         print("  [1] Atacar")
-        print("  [2] Ver mapa (Mi Flota)") # Muestra dónde están tus barcos y los ataques de la IA
-        print("  [3] Ver mapa (IA)")      # Muestra tus disparos al enemigo
+        print("  [2] Ver mapa (Mi Flota)") 
+        print("  [3] Ver mapa (IA)")      
         print("  [4] Salir al menú principal (Guardar)") 
         
         eleccion = input("\n> Selecciona una opción: ").strip()
@@ -266,13 +271,11 @@ def iniciar_juego(tablero_pc_barcos=None, tablero_pc_disparos=None, tablero_juga
             turno_ia(tablero_jugador_barcos, tablero_jugador_disparos, dificultad)
             
         elif eleccion == '2': 
-            # 🌟 CORRECCIÓN APLICADA: Muestra el tablero de TUS BARCOS (donde la IA ha disparado)
             print("\n--- MI FLOTA ---")
             imprimir_tablero(tablero_jugador_barcos) 
             input("\nPresiona ENTER para volver al menú de partida...")
 
         elif eleccion == '3': 
-            # Muestra el mapa de la IA (Mis Disparos)
             print("\n--- TU MAPA DE DISPAROS DEL ENEMIGO ---")
             imprimir_tablero(tablero_pc_disparos)
             input("\nPresiona ENTER para volver al menú de partida...")

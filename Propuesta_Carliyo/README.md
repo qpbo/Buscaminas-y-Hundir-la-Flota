@@ -40,7 +40,7 @@ El clásico juego naval donde debes hundir toda la flota enemiga antes de que hu
 
 1. **Clona o descarga este repositorio:**
    ```bash
-   git clone <https://github.com/qpbo/Buscaminas-y-Hundir-la-Flota.git>
+   git clone https://github.com/qpbo/Buscaminas-y-Hundir-la-Flota.git
    cd Propuesta_Carliyo
    ```
 

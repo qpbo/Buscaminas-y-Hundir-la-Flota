@@ -26,31 +26,39 @@ def mostrar_titulo():
     print("\n" + "="*60 + "\n")
 
 # -----------------------------------------------------------------
-# --- FUNCIONES DE ACCIÓN DEL MENÚ ---
+## Funciones de Acción del Menú
 # -----------------------------------------------------------------
 
 def continuar_partida():
     """Carga una partida guardada y la inicia, pasando la dificultad actual."""
     
-    tableros_barcos, tableros_disparos = juego.cargar_partida()
+    # 🌟 CORRECCIÓN CRÍTICA: Desempaquetamos los 4 tableros que devuelve juego.cargar_partida()
+    tableros_pc_barcos, tableros_pc_disparos, tableros_jugador_barcos, tableros_jugador_disparos = juego.cargar_partida()
     
-    if tableros_barcos is None:
+    # Verificamos si la carga falló (si el primer valor es None)
+    if tableros_pc_barcos is None:
         print("\n>> ❌ No se encontró ninguna partida guardada para continuar.")
         time.sleep(2)
     else:
-        # Si la carga fue exitosa, iniciamos el juego pasándole los tableros Y la dificultad
-        juego.iniciar_juego(tableros_barcos, tableros_disparos, DIFICULTAD_ACTUAL)
+        # Iniciamos el juego pasándole los 4 tableros cargados y la dificultad
+        juego.iniciar_juego(
+            tableros_pc_barcos, 
+            tableros_pc_disparos, 
+            tableros_jugador_barcos, 
+            tableros_jugador_disparos,
+            DIFICULTAD_ACTUAL
+        )
 
 
 def nueva_partida():
     """Inicia una partida nueva, pasando la dificultad actual."""
-    # Al no pasar tableros, juego.iniciar_juego crea una partida nueva
+    # Al no pasar tableros, juego.iniciar_juego los crea
     juego.iniciar_juego(dificultad=DIFICULTAD_ACTUAL)
 
 
 def opciones():
     """Permite al usuario cambiar la dificultad del juego."""
-    global DIFICULTAD_ACTUAL # Necesario para modificar la variable global
+    global DIFICULTAD_ACTUAL 
     while True:
         limpiar_pantalla()
         mostrar_titulo()
@@ -81,7 +89,7 @@ def opciones():
 
 
 # -----------------------------------------------------------------
-# --- BUCLE PRINCIPAL DEL MENÚ ---
+## Bucle Principal del Menú
 # -----------------------------------------------------------------
 
 def menu_principal():
@@ -92,7 +100,6 @@ def menu_principal():
         
         print("  [1] Continuar partida")
         print("  [2] Nueva partida")
-        # Mostramos la dificultad actual directamente en el menú principal
         print(f"  [3] Opciones (Dificultad: {DIFICULTAD_ACTUAL})") 
         print("  [4] Salir")
         

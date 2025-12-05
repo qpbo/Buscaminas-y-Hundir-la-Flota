@@ -28,12 +28,11 @@ def imprimir_tablero(tablero):
     numeros_columna = " ".join([f"{i}" for i in range(DIMENSION)])
     print(f"\n   {numeros_columna}") 
     
-    # 2. Línea separadora: 3 espacios iniciales + '+' + 20 guiones largos
-    print("   +" + "—" * 20) 
+    # 2. Línea separadora: Usando '-' y longitud ajustada a 19 para la alineación perfecta
+    print("   +" + "-" * 19) 
     
     for i, fila in enumerate(tablero):
         # 3. Filas: 1 espacio inicial para alinear la letra A con el '+', 
-        #    seguido de ' | ' y el contenido del tablero.
         print(f" {NUMEROS_A_LETRAS[i]} | {' '.join(fila)}") 
         
 def validar_coordenadas(fila, col, longitud, orientacion, tablero):
@@ -250,7 +249,7 @@ def iniciar_juego(tablero_pc_barcos=None, tablero_pc_disparos=None, tablero_juga
         
     # --- Bucle Principal de Partida con Submenú ---
     while True:
-        # 1. Mostrar el submenú de partida
+        # 1. Mostramos el submenú de partida
         print("\n" + "="*25)
         print("  MENÚ DE PARTIDA ACTUAL")
         print("="*25)
@@ -268,13 +267,11 @@ def iniciar_juego(tablero_pc_barcos=None, tablero_pc_disparos=None, tablero_juga
             turno_ia(tablero_jugador_barcos, tablero_jugador_disparos, dificultad)
             
         elif eleccion == '2': 
-            # 💥 CAMBIO AQUÍ: Título alineado con el formato del mapa
             print("\n   --- MI FLOTA ---")
             imprimir_tablero(tablero_jugador_barcos) 
             input("\nPresiona ENTER para volver al menú de partida...")
 
         elif eleccion == '3': 
-            # 💥 CAMBIO AQUÍ: Título alineado con el formato del mapa
             print("\n   --- TU MAPA DE DISPAROS DEL ENEMIGO ---")
             imprimir_tablero(tablero_pc_disparos)
             input("\nPresiona ENTER para volver al menú de partida...")
@@ -286,3 +283,68 @@ def iniciar_juego(tablero_pc_barcos=None, tablero_pc_disparos=None, tablero_juga
         else:
             print("\n❌ Opción no válida. Inténtalo de nuevo.")
             time.sleep(1)
+
+# -----------------------------------------------------------------
+## 6. Lógica del Menú Principal (Función de Inicio)
+# -----------------------------------------------------------------
+
+def mostrar_menu_principal():
+    """Muestra el menú principal y gestiona las opciones de inicio/carga."""
+    
+    dificultad_actual = "Medio" # Por defecto
+    
+    while True:
+        print("\n" + "#" * 30)
+        print("####### HUNDIR LA FLOTA #######")
+        print("#" * 30)
+        print("\nSelecciona una opción:")
+        print(" [1] Nueva Partida (Dificultad: " + dificultad_actual + ")")
+        print(" [2] Cargar Partida")
+        print(" [3] Cambiar Dificultad")
+        print(" [4] Salir")
+        
+        eleccion = input("\n> Opción: ").strip()
+
+        if eleccion == '1':
+            # Inicia una nueva partida (todos los tableros son None)
+            iniciar_juego(dificultad=dificultad_actual)
+        
+        elif eleccion == '2':
+            # Intenta cargar la partida
+            pc_b, pc_d, jug_b, jug_d = cargar_partida()
+            if pc_b is not None:
+                iniciar_juego(pc_b, pc_d, jug_b, jug_d, dificultad=dificultad_actual)
+            else:
+                print("\n⚠️ No se pudo cargar la partida o no existe el archivo.")
+        
+        elif eleccion == '3':
+            dificultad_actual = elegir_dificultad()
+        
+        elif eleccion == '4':
+            print("\n👋 ¡Gracias por jugar! ¡Hasta la próxima!")
+            break
+        
+        else:
+            print("\n❌ Opción no válida. Por favor, selecciona 1, 2, 3 o 4.")
+
+def elegir_dificultad():
+    """Permite al usuario elegir la dificultad de la IA."""
+    while True:
+        print("\n--- SELECCIÓN DE DIFICULTAD ---")
+        print(" [1] Fácil (IA dispara una vez)")
+        print(" [2] Medio (IA dispara dos veces si acierta)")
+        print(" [3] Difícil (IA dispara dos veces siempre)")
+        
+        d = input("\n> Elige el nivel (1-3): ").strip()
+        
+        if d == '1': return "Facil"
+        elif d == '2': return "Medio"
+        elif d == '3': return "Dificil"
+        else: print("\n❌ Opción no válida.")
+
+# -----------------------------------------------------------------
+## 7. LLAMADA DE INICIO DEL PROGRAMA
+# -----------------------------------------------------------------
+
+if __name__ == "__main__":
+    mostrar_menu_principal()

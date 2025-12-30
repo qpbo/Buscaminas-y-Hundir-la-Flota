@@ -90,14 +90,14 @@ def traducir_coordenada(coordenada):
 def pedir_disparo(tablero_enemigo_disparos):
     """Pide y valida la coordenada de disparo."""
     while True:
-        coordenada_str = input("🎯 ¿Dónde disparas? (Ej: A5, J0): ").strip()
+        coordenada_str = input("¿Dónde disparas? (Ej: A5, J0): ").strip()
         fila, columna = traducir_coordenada(coordenada_str)
         
         if fila is None:
-            print("❌ Formato de coordenada inválido. Usa una letra (A-J) y un número (0-9).")
+            print("Formato de coordenada inválido. Usa una letra (A-J) y un número (0-9).")
             continue
         if tablero_enemigo_disparos[fila][columna] != AGUA:
-            print("❌ Ya has disparado a esa casilla. Elige otra.")
+            print("Ya has disparado a esa casilla. Elige otra.")
             continue
         return fila, columna
 
@@ -109,12 +109,12 @@ def realizar_ataque(tablero_pc_barcos, tablero_pc_disparos):
     
     impacto = False
     if tablero_pc_barcos[f_disp][c_disp] == BARCO:
-        print("\n🎉 ¡TOCADO! Excelente puntería.")
+        print("\n¡TOCADO! Excelente puntería.")
         tablero_pc_disparos[f_disp][c_disp] = TOCADO
         tablero_pc_barcos[f_disp][c_disp] = TOCADO
         impacto = True
     else:
-        print("\n💧 ¡AGUA! Has fallado el tiro.")
+        print("\n¡AGUA! Has fallado el tiro.")
         tablero_pc_disparos[f_disp][c_disp] = FALLADO
         
     time.sleep(1.5)
@@ -145,11 +145,11 @@ def realizar_ataque_ia(tablero_jugador_barcos, tablero_jugador_disparos):
 
     impacto = False
     if tablero_jugador_barcos[f_disp][c_disp] == BARCO:
-        print("💥 ¡HAN DADO EN TU FLOTA! Tocado.")
+        print("¡HAN DADO EN TU FLOTA! Tocado.")
         tablero_jugador_barcos[f_disp][c_disp] = TOCADO 
         impacto = True
     else:
-        print("💦 La IA ha disparado al agua. Falló.")
+        print("La IA ha disparado al agua. Falló.")
         tablero_jugador_barcos[f_disp][c_disp] = FALLADO 
     
     time.sleep(1.5)
@@ -189,9 +189,9 @@ def guardar_partida(tablero_pc_barcos, tablero_pc_disparos, tablero_jugador_barc
     try:
         with open(nombre_archivo, 'w') as f:
             json.dump(estado_partida, f, indent=4)
-        print(f"\n💾 Partida guardada con éxito en '{nombre_archivo}'.")
+        print(f"\nPartida guardada con éxito en '{nombre_archivo}'.")
     except Exception as e:
-        print(f"\n❌ Error al guardar la partida: {e}")
+        print(f"\nError al guardar la partida: {e}")
 
 def cargar_partida(nombre_archivo="partida_guardada.json"):
     """Carga el estado completo de la partida desde un archivo JSON (4 tableros)."""
@@ -199,7 +199,7 @@ def cargar_partida(nombre_archivo="partida_guardada.json"):
         with open(nombre_archivo, 'r') as f:
             estado_partida = json.load(f)
         
-        print(f"\n✅ Partida cargada desde '{nombre_archivo}'.")
+        print(f"\nPartida cargada desde '{nombre_archivo}'.")
         
         return (estado_partida["tablero_pc_barcos"], 
                 estado_partida["tablero_pc_disparos"],
@@ -209,7 +209,7 @@ def cargar_partida(nombre_archivo="partida_guardada.json"):
     except FileNotFoundError:
         return None, None, None, None
     except Exception as e:
-        print(f"\n❌ Error al cargar la partida. El archivo podría estar corrupto: {e}")
+        print(f"\nError al cargar la partida. El archivo podría estar corrupto: {e}")
         return None, None, None, None
 
 
@@ -281,7 +281,7 @@ def iniciar_juego(tablero_pc_barcos=None, tablero_pc_disparos=None, tablero_juga
             break 
         
         else:
-            print("\n❌ Opción no válida. Inténtalo de nuevo.")
+            print("\nOpción no válida. Inténtalo de nuevo.")
             time.sleep(1)
 
 # -----------------------------------------------------------------
@@ -315,17 +315,17 @@ def mostrar_menu_principal():
             if pc_b is not None:
                 iniciar_juego(pc_b, pc_d, jug_b, jug_d, dificultad=dificultad_actual)
             else:
-                print("\n⚠️ No se pudo cargar la partida o no existe el archivo.")
+                print("\nNo se pudo cargar la partida o no existe el archivo.")
         
         elif eleccion == '3':
             dificultad_actual = elegir_dificultad()
         
         elif eleccion == '4':
-            print("\n👋 ¡Gracias por jugar! ¡Hasta la próxima!")
+            print("\n¡Gracias por jugar! ¡Hasta la próxima!")
             break
         
         else:
-            print("\n❌ Opción no válida. Por favor, selecciona 1, 2, 3 o 4.")
+            print("\nOpción no válida. Por favor, selecciona 1, 2, 3 o 4.")
 
 def elegir_dificultad():
     """Permite al usuario elegir la dificultad de la IA."""
@@ -340,7 +340,7 @@ def elegir_dificultad():
         if d == '1': return "Facil"
         elif d == '2': return "Medio"
         elif d == '3': return "Dificil"
-        else: print("\n❌ Opción no válida.")
+        else: print("\nOpción no válida.")
 
 # -----------------------------------------------------------------
 ## 7. LLAMADA DE INICIO DEL PROGRAMA

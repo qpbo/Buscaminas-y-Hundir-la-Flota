@@ -1,4 +1,5 @@
 # Creación del tablero vacío
+import random
 
 tablero = []
 for i in range(10):
@@ -92,3 +93,61 @@ for longitud in barcos_a_colocar:
             print("¡Barco colocado con éxito!")
 
 print("\n¡TODOS LOS BARCOS HAN SIDO COLOCADOS!")
+
+
+# Creamos el tablero de la IA
+tablero_ia = []
+for i in range(10):
+    fila = ["~", "~", "~", "~", "~", "~", "~", "~", "~", "~"]
+    tablero_ia.append(fila)
+
+print("\nLa IA está colocando sus barcos...")
+
+# Reutilizamos la misma lista de barcos
+for longitud in barcos_a_colocar:
+    colocado = False
+    
+    while colocado == False:
+        # La IA elige coordenadas y orientación al azar
+        fila_index = random.randint(0, 9)
+        columna = random.randint(0, 9)
+        orientacion = random.choice(["H", "V"])
+        
+        error = False
+        
+        # Comprobamos si se sale del tablero
+        if orientacion == "H":
+            if columna + longitud > 10:
+                error = True
+        elif orientacion == "V":
+            if fila_index + longitud > 10:
+                error = True
+
+        # Comprobamos colisiones con otros barcos
+        if error == False:
+            for n in range(longitud):
+                if orientacion == "H":
+                    f_actual = fila_index
+                    c_actual = columna + n
+                else:
+                    f_actual = fila_index + n
+                    c_actual = columna
+                
+                for df in range(-1, 2):
+                    for dc in range(-1, 2):
+                        f_revisar = f_actual + df
+                        c_revisar = c_actual + dc
+                        if 0 <= f_revisar < 10 and 0 <= c_revisar < 10:
+                            if tablero_ia[f_revisar][c_revisar] == "1":
+                                error = True
+
+        # Si todo es correcto, lo colocamos en el tablero de la IA
+        if error == False:
+            for n in range(longitud):
+                if orientacion == "H":
+                    tablero_ia[fila_index][columna + n] = "1"
+                else:
+                    tablero_ia[fila_index + n][columna] = "1"
+            colocado = True
+
+print("¡La IA ha terminado de colocar su flota!")
